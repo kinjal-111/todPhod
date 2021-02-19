@@ -1,0 +1,238 @@
+
+package todphod.ui.pages;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import todphod.core.Category;
+import todphod.core.Customer;
+import todphod.core.Order;
+import todphod.core.OrderProducts;
+import todphod.ui.components.OrderInfoPanel;
+import todphod.ui.components.ItemList;
+
+
+public class ManageOrders extends javax.swing.JPanel {
+    private ItemList ordersList;
+    private List<OrderInfoPanel> ordersPanel;
+    
+    
+    /**
+     * Creates new form AddOrder
+     */
+    public ManageOrders() {
+        initComponents();
+        this.setSize(1090, 750);
+        
+        
+        List<JComponent> components = this.getAllorderPanel();
+        
+        this.jdcFrom.getDateEditor().addPropertyChangeListener(
+        new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent e) {
+                if ("date".equals(e.getPropertyName())) {
+                    System.out.println(e.getPropertyName()
+                        + ": " + (Date) e.getNewValue());
+                }
+            }
+        });
+        
+        this.ordersList = new ItemList(components, OrderInfoPanel.WIDTH);
+        this.ordersList.setBounds(55, 150, OrderInfoPanel.WIDTH, 550);
+        this.add(ordersList);
+        
+        this.customInitComponents();
+    }
+    
+    private void customInitComponents() {
+        
+    }
+    
+    private List<JComponent> getAllorderPanel() {
+        Order order = new Order();
+        this.ordersPanel = new ArrayList<>();
+        List<JComponent> components = new ArrayList<>();
+        
+        Map<Integer, Order> orderMap = order.getAllOrders();
+        
+        for(Order orderInfo : orderMap.values()) {
+            int id = orderInfo.getOrderID();
+            if(orderInfo.getCustomerID() != 0){
+            String customerName = new Customer().getCustomerByID(orderInfo.getCustomerID()).getCustomerName();
+            int productCount = new OrderProducts().getAllOrderProductsByOrderID(id).keySet().size();
+            String date = orderInfo.getOrderDate();
+            int state = orderInfo.getState();
+            String status = "";
+            switch(state) {
+                case 1 : 
+                    status = "Placed";
+                    break;
+                    
+                case 2 : 
+                    status = "Processing";
+                    break;
+                    
+                case 3 : 
+                    status = "Ready! :)";
+                    break;
+                    
+                case 4 : 
+                    status = "Delivered";
+                    break;
+            }
+                    
+            final OrderInfoPanel orderInfoPanel = new OrderInfoPanel(id, customerName, productCount, date, status);
+            final ManageOrders manageOrders = this;
+            final int orderId = orderInfoPanel.getId();
+            
+            orderInfoPanel.getJbEdit().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent mouseEvent) {
+                     System.out.println("Edit Pressed " + orderInfoPanel.getId());
+               }
+            });
+            
+            orderInfoPanel.getJbDelete().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent mouseEvent) {
+                    if(JOptionPane.showConfirmDialog(manageOrders, "Do you really want to delete the order ?", "Delete Orders", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        Order order = new Order();
+                        order.delete(orderId);
+                        manageOrders.refreshList();
+                    }
+                }
+            });
+            
+            orderInfoPanel.getJbView().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent mouseEvent) {
+                     System.out.println("View Pressed");
+               }
+            });
+            
+            this.ordersPanel.add(orderInfoPanel);
+            components.add(orderInfoPanel);
+        }
+        }
+        return components;
+
+        }
+    
+    private void refreshList() {
+        this.remove(this.ordersList);
+        
+        List<JComponent> components = this.getAllorderPanel();
+        this.ordersList = new ItemList(components, OrderInfoPanel.WIDTH);
+        this.ordersList.setBounds(55, 150, OrderInfoPanel.WIDTH, 550);
+        this.add(ordersList);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jdcFrom = new com.toedter.calendar.JDateChooser();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jdcTo = new com.toedter.calendar.JDateChooser();
+        jLabel10 = new javax.swing.JLabel();
+
+        setBackground(new java.awt.Color(255, 255, 255));
+        setLayout(null);
+
+        jLabel1.setFont(new java.awt.Font("Raleway", 1, 32)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 198, 255));
+        jLabel1.setText("Manage Orders");
+        add(jLabel1);
+        jLabel1.setBounds(55, 36, 300, 39);
+
+        jLabel2.setFont(new java.awt.Font("Raleway", 1, 20)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 198, 255));
+        jLabel2.setText("Customer");
+        add(jLabel2);
+        jLabel2.setBounds(75, 120, 150, 24);
+
+        jLabel5.setFont(new java.awt.Font("Raleway", 1, 20)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 198, 255));
+        jLabel5.setText("Controls : ");
+        add(jLabel5);
+        jLabel5.setBounds(855, 120, 120, 24);
+
+        jLabel3.setFont(new java.awt.Font("Raleway", 1, 20)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 198, 255));
+        jLabel3.setText("Qty");
+        add(jLabel3);
+        jLabel3.setBounds(545, 120, 40, 24);
+
+        jLabel4.setFont(new java.awt.Font("Raleway", 1, 20)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 198, 255));
+        jLabel4.setText("From : ");
+        add(jLabel4);
+        jLabel4.setBounds(650, 40, 80, 24);
+
+        jdcFrom.setBackground(new java.awt.Color(255, 255, 255));
+        jdcFrom.setForeground(new java.awt.Color(0, 198, 255));
+        jdcFrom.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        jdcFrom.setIcon(new ImageIcon("/Users/gauravpunjabi/Downloads/calendar.png"));
+        add(jdcFrom);
+        jdcFrom.setBounds(650, 70, 160, 22);
+
+        jLabel8.setFont(new java.awt.Font("Raleway", 1, 20)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(0, 198, 255));
+        jLabel8.setText("Status");
+        add(jLabel8);
+        jLabel8.setBounds(315, 120, 80, 24);
+
+        jLabel9.setFont(new java.awt.Font("Raleway", 1, 20)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 198, 255));
+        jLabel9.setText("To : ");
+        add(jLabel9);
+        jLabel9.setBounds(860, 40, 80, 24);
+
+        jdcTo.setBackground(new java.awt.Color(255, 255, 255));
+        jdcTo.setForeground(new java.awt.Color(0, 198, 255));
+        jdcTo.setFont(new java.awt.Font("Raleway", 0, 18)); // NOI18N
+        jdcTo.setIcon(new ImageIcon("/Users/gauravpunjabi/Downloads/calendar.png"));
+        add(jdcTo);
+        jdcTo.setBounds(860, 70, 160, 22);
+
+        jLabel10.setFont(new java.awt.Font("Raleway", 1, 20)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 198, 255));
+        jLabel10.setText("Date");
+        add(jLabel10);
+        jLabel10.setBounds(690, 120, 80, 24);
+    }// </editor-fold>//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private com.toedter.calendar.JDateChooser jdcFrom;
+    private com.toedter.calendar.JDateChooser jdcTo;
+    // End of variables declaration//GEN-END:variables
+}
